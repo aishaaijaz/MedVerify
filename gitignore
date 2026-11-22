@@ -1,0 +1,14 @@
+# Data (licensing: do not redistribute DDInter / MecDDI)
+data/
+MecDDI/
+runs/
+
+# Python / tooling
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env
+.streamlit/
+.vscode/
+.idea/

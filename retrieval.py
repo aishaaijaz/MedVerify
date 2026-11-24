@@ -267,3 +267,24 @@ def parse_labels(text):
             v = u.split(":", 1)[1].strip(" *`.<>")
             sev = v if v in ("major", "moderate", "minor", "unknown", "insufficient_evidence") else None
     return {"categories": cats, "severity": sev}
+
+
+def score_answer(ans, truth):
+    """Score one answer. `truth` = {'categories': [...], 'severity': ...} or None when the pair has no record.
+
+    parsed     = the answer contains BOTH label lines (CATEGORIES: and SEVERITY:). Otherwise it is a FORMAT FAILURE
+                 (empty text, echoed prompt, missing labels) and is never treated as an abstention.
+    abstained  = labels present but no category and severity insufficient/unknown.
+    """
+    import re
+    lab = parse_labels(ans or "")
+    has = bool(re.search(r"(?im)^[\W_]*categories\s*:", ans or "")) and bool(re.search(r"(?im)^[\W_]*severity\s*:", ans or ""))
+    abst = has and not lab["categories"] and lab["severity"] in (None, "insufficient_evidence", "unknown")
+    out = {"pred_categories": ";".join(lab["categories"]), "pred_severity": lab["severity"] or "", "parsed": has, "abstained": abst}
+    if truth:
+        tc = set(truth["categories"])
+        out.update(cat_exact=has and set(lab["categories"]) == tc, cat_overlap=has and bool(set(lab["categories"]) & tc),
+                   sev_correct=has and lab["severity"] == truth["severity"])
+    else:  # no record exists: the only correct behaviour is to abstain
+        out.update(cat_exact=abst, cat_overlap=False, sev_correct=abst)
+    return out

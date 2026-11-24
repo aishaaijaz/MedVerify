@@ -1,0 +1,61 @@
+pair_id,pair_key,drug_a,drug_b,group
+P01,D0215|D0606,Budesonide,Estradiol,main
+P02,D0387|D0671,Conjugated estrogens,Fludrocortisone,main
+P03,D0610|D1563,Estrone sulfate,Tetracosactide,main
+P04,D1120|D1193,Neomycin,Oxaliplatin,main
+P05,D0074|D1483,Amphetamine,Sodium citrate,main
+P06,D0017|D0483,Acetylsalicylic acid,Didanosine,main
+P07,D1312|D1372,Pomalidomide,Quinine,main
+P08,D0313|D1136,Chloramphenicol,Nilotinib,main
+P09,D1025|D1791,Methotrexate,Gadobenic acid,main
+P10,D0730|D1151,Glyburide,Nizatidine,main
+P11,D0239|D1209,Calcium glubionate anhydrous,Oxytetracycline,main
+P12,D0973|D1346,Magnesium hydroxide,Prochlorperazine,main
+P13,D1163|D1779,Octreotide,Dulaglutide,main
+P14,D0986|D1662,Mechlorethamine,Typhoid vaccine (inactivated),main
+P15,D0114|D1749,Asparaginase Escherichia coli,Bifidobacterium longum infantis,main
+P16,D0386|D1495,Conivaptan,Somatrem,main
+P17,D0697|D1143,Fosphenytoin,Nitisinone,main
+P18,D0435|D0506,Defibrotide,Dipyridamole,main
+P19,D0872|D1673,Ivosidenib,Valbenazine,main
+P20,D0342|D1637,Cisapride,Trifluoperazine,main
+P21,D0377|D1276,Cocaine (nasal),Phenylephrine,main
+P22,D1167|D1556,Olaparib,Teriflunomide,main
+P23,D0095|D0749,Apalutamide,Halofantrine,main
+P24,D0348|D1334,Cladribine,Prednisone,main
+P25,D1073|D1234,Mipomersen,Pegaspargase,main
+P26,D1234|D1914,Pegaspargase,Typhoid vaccine (live),main
+P27,D0075|D0834,Amphotericin B,Iopamidol,main
+P28,D0785|D1890,Ibrutinib,"Smallpox (Vaccinia) Vaccine, Live",main
+P29,D0067|D0594,Amisulpride,Eribulin,main
+P30,D0192|D0947,Boceprevir,Loperamide,main
+P31,D0036|D0597,Alfuzosin,Erythromycin,main
+P32,D0551|D1109,Edoxaban,Naproxen,main
+P33,D0195|D0614,Bosutinib,Etanercept,main
+P34,D0227|D1744,Cabazitaxel,Bacillus calmette-guerin substrain tice live antigen,main
+P35,D0579|D1486,Ephedrine,"Sodium phosphate, monobasic",main
+P36,D0536|D1294,Drospirenone,Pioglitazone,main
+P37,D0442|D0573,Denileukin diftitox,Enoxacin,main
+P38,D0858|D1334,Isoniazid,Prednisone,main
+P39,D0793|D1074,Imatinib,Mirabegron,main
+P40,D0918|D0968,Levodopa,Magnesium carbonate,main
+P41,D0997|D1724,Melphalan flufenamide,Zinc gluconate,main
+P42,D0565|D1737,Empagliflozin,Amcinonide,main
+P43,D0599|D1214,Escitalopram,Palbociclib,main
+P44,D0406|D1726,Dabrafenib,Ziprasidone,main
+P45,D0595|D1081,Erlotinib,Modafinil,main
+P46,D0880|D1428,Ketoconazole,Ropivacaine,main
+P47,D0349|D1253,Clarithromycin,Perampanel,main
+P48,D0094|D1725,Antithymocyte immunoglobulin (rabbit),Zinc sulfate,main
+P49,D0166|D0353,Benzthiazide,Clidinium,main
+P50,D1051|D1216,Metronidazole,Palonosetron,main
+N01,D0551|D1025,Edoxaban,Methotrexate,no_record
+N02,D0872|D1428,Ivosidenib,Ropivacaine,no_record
+N03,D0834|D0973,Iopamidol,Magnesium hydroxide,no_record
+N04,D0536|D1556,Teriflunomide,Drospirenone,no_record
+N05,D0749|D0785,Ibrutinib,Halofantrine,no_record
+N06,D0313|D0565,Empagliflozin,Chloramphenicol,no_record
+N07,D0036|D0606,Estradiol,Alfuzosin,no_record
+N08,D0606|D1372,Quinine,Estradiol,no_record
+N09,D0565|D0973,Magnesium hydroxide,Empagliflozin,no_record
+N10,D0377|D0880,Cocaine (nasal),Ketoconazole,no_record

@@ -160,7 +160,7 @@ def verify(answer, ev, record, judge=None):
         elif SPECIFIC.search(text) and not re.search(SPECIFIC, evidence):
             label, reason, layer = ("unsupported_specific",
                                     f"Names '{SPECIFIC.search(text).group(0)}', which no retrieved source states.", "rule")
-        elif ABSENCE.search(text) and (record is not None or ev.get("mode") == "pair"):
+        elif ABSENCE.search(text) and (record is not None or ev.get("mode") == "pair" or not ev.get("pair_found", True)):
             absent = not ev.get("pair_found", record is not None)
             label, layer = ("supported", "Database has no record for this pair.") if absent else ("contradicted", "Database DOES have a record for this pair.")
             reason, layer = layer, "database"

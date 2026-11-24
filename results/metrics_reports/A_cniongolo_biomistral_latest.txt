@@ -1,0 +1,29 @@
+RUN A_cniongolo_biomistral_latest | n=50 main pairs | parseable labels: 0.0%
+
+SEVERITY  accuracy 0.000 (95% CI 0.00-0.00) | macro-F1 0.000 (CI 0.00-0.00)
+  major            P 0.00  R 0.00  F1 0.00  (n=17)
+  moderate         P 0.00  R 0.00  F1 0.00  (n=17)
+  minor            P 0.00  R 0.00  F1 0.00  (n=16)
+  confusion matrix (rows = true):
+          major  moderate  minor  other
+major         0         0      0     17
+moderate      0         0      0     17
+minor         0         0      0     16
+
+CATEGORY exact-match 0.000 (CI 0.00-0.00) | micro-F1 0.000 | macro-F1 0.000
+  absorption       P 0.00  R 0.00  F1 0.00  (n=6)
+  transport        P 0.00  R 0.00  F1 0.00  (n=4)
+  distribution     P 0.00  R 0.00  F1 0.00  (n=3)
+  metabolism       P 0.00  R 0.00  F1 0.00  (n=12)
+  excretion        P 0.00  R 0.00  F1 0.00  (n=5)
+  pd_additive      P 0.00  R 0.00  F1 0.00  (n=15)
+  pd_antagonistic  P 0.00  R 0.00  F1 0.00  (n=9)
+  confusion matrix, pairs with exactly one true category:
+                 absorption  transport  distribution  metabolism  excretion  pd_additive  pd_antagonistic  multi/none
+absorption                0          0             0           0          0            0                0           5
+transport                 0          0             0           0          0            0                0           2
+distribution              0          0             0           0          0            0                0           3
+metabolism                0          0             0           0          0            0                0          10
+excretion                 0          0             0           0          0            0                0           5
+pd_additive               0          0             0           0          0            0                0          13
+pd_antagonistic           0          0             0           0          0            0                0           8

@@ -1,0 +1,10 @@
+run,n,sev_accuracy,sev_macro_f1,cat_exact,cat_micro_f1,cat_macro_f1,parse_rate
+A_qwen2_5_3b,50,0.14,0.141,0.04,0.333,0.325,0.84
+Bpair_qwen2_5_3b,50,0.96,0.979,0.88,0.887,0.872,0.96
+Bheld_qwen2_5_3b,50,0.12,0.139,0.06,0.295,0.249,0.62
+A_llama3_2_3b,50,0.06,0.078,0.0,0.215,0.189,0.9
+Bpair_llama3_2_3b,50,0.9,0.924,0.54,0.585,0.559,0.94
+Bheld_llama3_2_3b,50,0.22,0.243,0.12,0.273,0.239,0.9
+A_cniongolo_biomistral_latest,50,0.0,0.0,0.0,0.0,0.0,0.0
+Bpair_cniongolo_biomistral_latest,50,0.0,0.0,0.0,0.0,0.0,0.0
+Bheld_cniongolo_biomistral_latest,50,0.0,0.0,0.0,0.0,0.0,0.0

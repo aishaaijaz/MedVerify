@@ -1,0 +1,29 @@
+RUN Bpair_llama3_2_3b | n=50 main pairs | parseable labels: 94.0%
+
+SEVERITY  accuracy 0.900 (95% CI 0.82-0.96) | macro-F1 0.924 (CI 0.84-0.98)
+  major            P 1.00  R 0.71  F1 0.83  (n=17)
+  moderate         P 0.89  R 1.00  F1 0.94  (n=17)
+  minor            P 1.00  R 1.00  F1 1.00  (n=16)
+  confusion matrix (rows = true):
+          major  moderate  minor  other
+major        12         2      0      3
+moderate      0        17      0      0
+minor         0         0     16      0
+
+CATEGORY exact-match 0.540 (CI 0.40-0.68) | micro-F1 0.585 | macro-F1 0.559
+  absorption       P 0.46  R 1.00  F1 0.63  (n=6)
+  transport        P 0.25  R 0.50  F1 0.33  (n=4)
+  distribution     P 0.27  R 1.00  F1 0.43  (n=3)
+  metabolism       P 0.56  R 0.83  F1 0.67  (n=12)
+  excretion        P 0.56  R 1.00  F1 0.71  (n=5)
+  pd_additive      P 0.89  R 0.53  F1 0.67  (n=15)
+  pd_antagonistic  P 0.50  R 0.44  F1 0.47  (n=9)
+  confusion matrix, pairs with exactly one true category:
+                 absorption  transport  distribution  metabolism  excretion  pd_additive  pd_antagonistic  multi/none
+absorption                4          0             0           0          0            0                0           1
+transport                 0          0             0           0          0            0                0           2
+distribution              0          0             3           0          0            0                0           0
+metabolism                0          0             0          10          0            0                0           0
+excretion                 0          0             0           0          0            0                0           5
+pd_additive               0          0             0           0          0            6                0           7
+pd_antagonistic           0          0             0           0          0            0                2           6

@@ -1,0 +1,29 @@
+RUN Bheld_llama3_2_3b | n=50 main pairs | parseable labels: 90.0%
+
+SEVERITY  accuracy 0.220 (95% CI 0.12-0.34) | macro-F1 0.243 (CI 0.11-0.37)
+  major            P 0.33  R 0.12  F1 0.17  (n=17)
+  moderate         P 0.29  R 0.35  F1 0.32  (n=17)
+  minor            P 0.33  R 0.19  F1 0.24  (n=16)
+  confusion matrix (rows = true):
+          major  moderate  minor  other
+major         2         7      2      6
+moderate      4         6      4      3
+minor         0         8      3      5
+
+CATEGORY exact-match 0.120 (CI 0.04-0.22) | micro-F1 0.273 | macro-F1 0.239
+  absorption       P 0.19  R 1.00  F1 0.32  (n=6)
+  transport        P 0.05  R 0.25  F1 0.09  (n=4)
+  distribution     P 0.00  R 0.00  F1 0.00  (n=3)
+  metabolism       P 0.34  R 0.92  F1 0.50  (n=12)
+  excretion        P 0.12  R 0.40  F1 0.18  (n=5)
+  pd_additive      P 0.21  R 0.20  F1 0.21  (n=15)
+  pd_antagonistic  P 0.33  R 0.44  F1 0.38  (n=9)
+  confusion matrix, pairs with exactly one true category:
+                 absorption  transport  distribution  metabolism  excretion  pd_additive  pd_antagonistic  multi/none
+absorption                3          0             0           0          0            0                0           2
+transport                 0          0             0           1          0            0                0           1
+distribution              0          0             0           2          0            0                0           1
+metabolism                0          0             0           3          0            0                0           7
+excretion                 1          0             0           1          0            0                0           3
+pd_additive               1          0             0           2          0            0                0          10
+pd_antagonistic           3          0             0           0          0            0                0           5

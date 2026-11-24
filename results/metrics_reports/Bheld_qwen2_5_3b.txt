@@ -1,0 +1,29 @@
+RUN Bheld_qwen2_5_3b | n=50 main pairs | parseable labels: 62.0%
+
+SEVERITY  accuracy 0.120 (95% CI 0.04-0.20) | macro-F1 0.139 (CI 0.04-0.24)
+  major            P 1.00  R 0.12  F1 0.21  (n=17)
+  moderate         P 0.18  R 0.24  F1 0.21  (n=17)
+  minor            P 0.00  R 0.00  F1 0.00  (n=16)
+  confusion matrix (rows = true):
+          major  moderate  minor  other
+major         2         8      0      7
+moderate      0         4      0     13
+minor         0        10      0      6
+
+CATEGORY exact-match 0.060 (CI 0.00-0.14) | micro-F1 0.295 | macro-F1 0.249
+  absorption       P 0.13  R 0.50  F1 0.21  (n=6)
+  transport        P 0.00  R 0.00  F1 0.00  (n=4)
+  distribution     P 0.06  R 0.33  F1 0.10  (n=3)
+  metabolism       P 0.32  R 0.58  F1 0.41  (n=12)
+  excretion        P 0.14  R 0.40  F1 0.21  (n=5)
+  pd_additive      P 0.35  R 0.60  F1 0.44  (n=15)
+  pd_antagonistic  P 0.26  R 0.67  F1 0.38  (n=9)
+  confusion matrix, pairs with exactly one true category:
+                 absorption  transport  distribution  metabolism  excretion  pd_additive  pd_antagonistic  multi/none
+absorption                0          0             0           0          0            0                0           5
+transport                 0          0             0           0          0            0                0           2
+distribution              0          0             0           0          0            0                0           3
+metabolism                0          0             0           0          0            0                0          10
+excretion                 0          0             0           0          0            0                0           5
+pd_additive               0          0             0           1          0            1                0          11
+pd_antagonistic           0          0             0           0          0            0                2           6

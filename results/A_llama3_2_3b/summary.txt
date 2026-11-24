@@ -1,0 +1,16 @@
+Condition A | mode - | model llama3.2:3b | judge None | T=0.2 | max_tokens=1024 | seed=42 | dry_run=False
+Main pairs evaluated: 50 (skipped, unresolved names: 0); answers with parseable labels: 100.0%
+Category exact-match: 0.0% | category any-overlap: 66.0%
+Severity accuracy: 6.0% | severity macro-F1 (major/moderate/minor): 0.078
+Severity accuracy by true class: major: 5.9%, moderate: 0.0%, minor: 12.5%
+Category recall by true category: absorption: 83%, transport: 100%, distribution: 100%, metabolism: 100%, excretion: 80%, pd_additive: 0%, pd_antagonistic: 78%
+Wrongly abstained on pairs WITH a record: 10.0%
+No-record pairs (n=10): correctly abstained 20.0%
+
+Verification (Condition C)
+Answers flagged: 88.0%
+Flagged among answers with a wrong final label: 88.0% (n=50)
+Flagged among answers with correct final labels: nan% (n=0)
+Mean claims per answer: 9.3; unsupported-detail claims per answer: 1.06; contradicted per answer: 1.02
+NOTE: category/severity checks compare with the same databases that define the reference, so they are exact by construction;
+what needs human labels is the free-text claim layer (claims.csv -> kappa_raters.py -> eval_verifier.py).

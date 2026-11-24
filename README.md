@@ -5,7 +5,7 @@
 **Team members:** AISHA AIJAZ, SNEHA  
 **Last updated:** 16 November 2026
 
-> **Status:** Preprocessing of both datasets (DDInter, MecDDI) and linking are complete and tested. Test-set construction, model experiments, verification and the Streamlit demo are planned.
+> **Status:** Preprocessing, Conditions A/B/C, the verifier and the batch evaluation are implemented and run on a fixed 50-pair test set for two Ollama models. Hand-labelling of claims (inter-rater kappa, verifier precision/recall) is in progress.
 
 ## 1. Project overview
 
@@ -51,60 +51,100 @@ Sources: https://ddinter2.scbdd.com/ , https://mecddi.idrblab.net/download
 
 ```text
 MedVerify/
-├── README.md, requirements.txt, .gitignore
+├── README.md, requirements.txt, .gitignore, EVALUATION.md
 ├── config.py                   # shared paths and helpers
 ├── 01_ddinter_preprocess.py    # raw DDInter -> data/processed/ddinter/
 ├── 02_mecddi_preprocess.py     # raw MecDDI  -> data/processed/mecddi/
 ├── 03_link_ddinter.py          # link by drug name -> data/processed/linked/
 ├── 04_eda.py                   # tables/charts -> data/processed/eda/
 ├── run_all.py                  # runs steps 01-04
-├── retrieval.py                # evidence lookup + Condition A/B prompts + label parser
+├── retrieval.py                # evidence lookup, Condition A/B prompts, label parser, scoring
 ├── llm.py                      # Ollama client
-├── verifier.py                 # Condition C claim-level verification
-├── app_b.py                    # Condition B demo (grounded)
-├── app_c.py                    # Condition C demo (grounded + verified)
-├── run_batch.py                # batch runs for A / B / C with automatic grading
+├── verifier.py                 # claim-level verification (Condition C)
+├── app_a.py / app_b.py / app_c.py   # Streamlit demos: zero-shot / grounded / grounded + verified
+├── make_pairs.py, eval_pairs.csv    # fixed evaluation pair list (50 main + 10 no-record)
+├── run_batch.py                # run A / B (+ verification) over the pair list, auto-grade
+├── rescore.py                  # re-score saved runs (format-failure logic)
+├── metrics.py                  # accuracy, P/R/F1, confusion matrices, bootstrap CIs
+├── kappa_raters.py             # inter-rater agreement on claim labels
 ├── eval_verifier.py            # verifier vs hand labels
-├── zeroshot_demo/              # Condition A demo
+├── collect_results.py          # copy aggregate results into results/ (+ results.zip)
+├── results/                    # committed aggregate results (no per-pair data)
 ├── data/                       # NOT in Git: data/raw/ (DDInter), processed outputs
-└── MecDDI/                     # NOT in Git: the 9 MecDDI CSVs
+├── MecDDI/                     # NOT in Git: the 9 MecDDI CSVs
+└── runs/                       # NOT in Git: per-run outputs (answers, claims)
 ```
 
 ## 4. Setup and running
 
 ```powershell
 pip install -r requirements.txt
-ollama pull <model-tag>          # at least two small models; run one at a time on 16 GB RAM
+ollama pull <model-tag>          # small instruction-tuned models; run one at a time on 16 GB RAM
 python run_all.py                # preprocessing (needs data/raw/ and MecDDI/)
-streamlit run app_b.py           # Condition B
-streamlit run app_c.py           # Condition C
+streamlit run app_a.py           # Condition A (zero-shot)
+streamlit run app_b.py           # Condition B (grounded)
+streamlit run app_c.py           # Condition C (grounded + verified)
 ```
-Condition A: see `zeroshot_demo/`. Test the batch pipeline without Ollama:
-`python run_batch.py --condition B --mode heldout --n 5 --verify --dry-run --out runs/test`
+Test the evaluation pipeline without Ollama: `python run_batch.py --condition B --mode heldout --pairs eval_pairs.csv --verify --dry-run --out runs/dry`
 
 ### The verifier (Condition C)
-Each answer is split into claims. A claim is (1) not verifiable if the model tagged it "(not in evidence)", (2) flagged if it names an enzyme/transporter no source states, (3) compared with MecDDI/DDInter if it states a mechanism category or severity (or says no record exists), (4) otherwise judged against the evidence text by an LLM at temperature 0, whose verdict must be backed by a quote found in the evidence. The verifier flags; it never rewrites answers.
+Each answer is split into claims. A claim is (1) not verifiable if the model tagged it "(not in evidence)", (2) flagged if it names an enzyme/transporter no source states, (3) compared with MecDDI/DDInter if it states a mechanism category or severity (or says no record exists), (4) otherwise judged against the evidence text by an LLM at temperature 0, whose verdict must be backed by a quote found in the evidence. The verifier flags; it never rewrites answers. The same judge model is used for every generator.
 
 ## 5. Evaluation
 
-Same seed, sample size, temperature and token limit for every run.
+**Test set:** `eval_pairs.csv` - 50 pairs present in both MecDDI and DDInter (17 Major / 17 Moderate / 16 Minor; all mechanism categories covered; no drug used more than twice) plus 10 pairs with no record (abstention test). Fixed before any model was run.
+
+**Conditions:** A = names only; B-pair = the pair's own record is supplied; B-held-out = the record is hidden and the model sees each drug's other known interactions; C = verification applied on top.
+
 ```powershell
-python run_batch.py --condition A --model <tag> --n 20 --out runs/A
-python run_batch.py --condition B --mode pair    --model <tag> --n 20 --out runs/B_pair
-python run_batch.py --condition B --mode heldout --model <tag> --n 20 --out runs/B_heldout
-python run_batch.py --condition B --mode heldout --model <tag> --judge-model <tag> --verify --out runs/C
-python eval_verifier.py runs/C/claims.csv     # after hand-labelling the human_label column
+$m = "<model-tag>"; $t = $m -replace '[:./]', '_'; $judge = "<judge-tag>"
+python run_batch.py --condition A --model $m --pairs eval_pairs.csv --verify --out "runs/A_$t"
+python run_batch.py --condition B --mode pair    --model $m --judge-model $judge --pairs eval_pairs.csv --verify --out "runs/Bpair_$t"
+python run_batch.py --condition B --mode heldout --model $m --judge-model $judge --pairs eval_pairs.csv --verify --out "runs/Bheld_$t"
+python rescore.py runs/A_$t runs/Bpair_$t runs/Bheld_$t     # only needed for runs made before the scoring fix
+python metrics.py runs/A_$t runs/Bpair_$t runs/Bheld_$t
+python collect_results.py runs/A_$t runs/Bpair_$t runs/Bheld_$t
 ```
-Metrics: category exact-match/overlap; severity accuracy and macro-F1; unsupported/contradicted claims per answer; verifier precision/recall/F1 and Cohen's kappa against hand labels (judged against the evidence, not clinical knowledge); abstention on pairs with no record.
+Same temperature and token limit for every run. Metrics: accuracy, per-class precision/recall/F1, macro/micro-F1, 95% bootstrap confidence intervals, confusion matrices, format-failure rate, abstention behaviour. Claim-level labels (`claims.csv`) are labelled independently by both team members against the stored evidence text only (never medical knowledge): `supported / contradicted / not_verifiable`; `kappa_raters.py` gives Cohen's kappa and `eval_verifier.py` the verifier's precision/recall/F1.
 
-## 6. Limitations
-- MecDDI is a static snapshot (last updated Feb 2023); only categories, no text or severity.
-- Name-based linking loses some drugs; results apply to the overlap (67% of MecDDI pairs).
-- Circular reference (see above); severity classes are imbalanced.
-- Small local models, small human-graded set, two raters. Not clinically validated.
+### What counts as a hallucination
+| Type | Definition | Measured by |
+|---|---|---|
+| Contradicted claim | States a category/severity that conflicts with MecDDI/DDInter, or says a record does/doesn't exist wrongly | database rule |
+| Unsupported specific detail | Names an enzyme/transporter/mechanism term (CYP, UGT, P-gp, OATP...) that no retrieved source states, without tagging it "(not in evidence)" | term rule |
+| Unsupported free-text claim | Presented as evidence-based but the evidence does not state it | LLM judge + hand labels |
+| Failure to abstain | Definite answer for a pair with no record | automatic |
 
-## 7. Future work
-- Consistency-based (SelfCheckGPT-style) verification as a comparison; a third or larger model; automatic correction stage; expert review before any real-world use.
+Not counted: claims honestly tagged "(not in evidence)" and expressions of uncertainty. "Unsupported" means no retrieved source states it, not that it is false. An answer missing the label lines is a **format failure**, reported separately and never counted as an abstention.
+
+## 6. Results (summary)
+
+Full tables and per-run reports are in `results/` (`RESULTS.md`, `comparison.csv`, `metrics_reports/`). Two Ollama models (Qwen 2.5 3B, Llama 3.2 3B), n = 50 pairs per run.
+
+| Run | Severity acc | Category exact | Unsupported details / answer | Contradicted / answer |
+|---|---|---|---|---|
+| Qwen A (zero-shot) | 14% | 4% | 0.86 | 0.50 |
+| Llama A (zero-shot) | 6% | 0% | 1.06 | 1.02 |
+| Qwen B-pair | 96% | 88% | 0.00 | 0.00 |
+| Llama B-pair | 90% | 54% | 0.08 | 0.10 |
+| Qwen B-held-out | 12% | 6% | 0.00 | 1.90 |
+| Llama B-held-out | 22% | 12% | 0.00 | 1.74 |
+
+- Supplying the pair's record removes almost all invented specific details and raises accuracy to 90%+ (largely copying the record).
+- With the record, Qwen follows the evidence better than Llama on category (non-overlapping confidence intervals); other model differences are within the intervals.
+- Without the record, both small models perform poorly and no model is clearly better. Models rarely abstain when no record exists.
+- A third model (BioMistral community build) produced no parseable answers and is excluded.
+
+## 7. Limitations
+- MecDDI is a static snapshot (last updated Feb 2023) with categories only: no explanatory text and no severity. Neither dataset has mechanism text.
+- Name-based linking leaves 2.3% of DDInter drugs unmatched; only 67% of MecDDI pairs have a DDInter severity.
+- The reference and the retrieval source are the same databases, so grounded results measure faithfulness to them, not clinical correctness. No clinician graded the outputs.
+- The specific-term rule only catches terms on its list; the LLM judge is a small model whose verdicts are evaluated against hand labels.
+- Small test set (50 pairs, wide confidence intervals); small local models; a held-out run may be affected by answer truncation (format failures).
+- Not clinically validated; outputs must not guide patient care.
+
+## 7b. Future work
+- Consistency-based (SelfCheckGPT-style) verification as a comparison; larger or domain models; retry of format-failed answers with a higher token limit; an automatic correction stage; expert review before any real-world use.
 
 ## 8. Literature and references
 
